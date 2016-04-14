@@ -158,13 +158,50 @@ NSString* const kCDVFilesystemURLPrefix = @"cdvfile";
 - (void)startLoading
 {
     CDVFilesystemURL* url = [CDVFilesystemURL fileSystemURLWithURL:[[self request] URL]];
+    
+    if ([url.fileSystemName isEqual: @"bundle"]) {
+        
+        url.fileSystemName = @"library-nosync";
+        
+        NSObject<CDVFileSystem> *fs = [filePlugin filesystemForURL:url];
+        __weak CDVFilesystemURLProtocol* weakSelf = self;
+        
+        [fs readFileAtURL:url start:0 end:-1 callback:^void(NSData *data, NSString *mimetype, CDVFileError error) {
+            
+            if (error) {
+                [self startLoadingOrigin];
+            } else {
+                NSMutableDictionary* responseHeaders = [[NSMutableDictionary alloc] init];
+                responseHeaders[@"Cache-Control"] = @"no-cache";
+            
+                if (!error) {
+                    responseHeaders[@"Content-Type"] = mimetype;
+                    NSURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url.url statusCode:200 HTTPVersion:@"HTTP/1.1"headerFields:responseHeaders];
+                    [[weakSelf client] URLProtocol:weakSelf didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+                    [[weakSelf client] URLProtocol:weakSelf didLoadData:data];
+                    [[weakSelf client] URLProtocolDidFinishLoading:weakSelf];
+                } else {
+                    NSURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url.url statusCode:404 HTTPVersion:@"HTTP/1.1"headerFields:responseHeaders];
+                    [[weakSelf client] URLProtocol:weakSelf didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+                    [[weakSelf client] URLProtocolDidFinishLoading:weakSelf];
+                }
+            }
+        }];
+    } else {
+        [self startLoadingOrigin];
+    }
+}
+
+- (void)startLoadingOrigin
+{
+    CDVFilesystemURL* url = [CDVFilesystemURL fileSystemURLWithURL:[[self request] URL]];
     NSObject<CDVFileSystem> *fs = [filePlugin filesystemForURL:url];
     __weak CDVFilesystemURLProtocol* weakSelf = self;
     
     [fs readFileAtURL:url start:0 end:-1 callback:^void(NSData *data, NSString *mimetype, CDVFileError error) {
         NSMutableDictionary* responseHeaders = [[NSMutableDictionary alloc] init];
         responseHeaders[@"Cache-Control"] = @"no-cache";
-
+        
         if (!error) {
             responseHeaders[@"Content-Type"] = mimetype;
             NSURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:url.url statusCode:200 HTTPVersion:@"HTTP/1.1"headerFields:responseHeaders];
