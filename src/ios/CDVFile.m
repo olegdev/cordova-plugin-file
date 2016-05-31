@@ -162,6 +162,7 @@ NSString* const kCDVFilesystemURLPrefix = @"cdvfile";
     if ([url.fileSystemName isEqual: @"bundle"]) {
         
         url.fileSystemName = @"library-nosync";
+        url.fullPath = [url.fullPath stringByReplacingOccurrencesOfString:@"www/" withString:@""];
         
         NSObject<CDVFileSystem> *fs = [filePlugin filesystemForURL:url];
         __weak CDVFilesystemURLProtocol* weakSelf = self;
@@ -197,7 +198,7 @@ NSString* const kCDVFilesystemURLPrefix = @"cdvfile";
     CDVFilesystemURL* url = [CDVFilesystemURL fileSystemURLWithURL:[[self request] URL]];
     NSObject<CDVFileSystem> *fs = [filePlugin filesystemForURL:url];
     __weak CDVFilesystemURLProtocol* weakSelf = self;
-    
+
     [fs readFileAtURL:url start:0 end:-1 callback:^void(NSData *data, NSString *mimetype, CDVFileError error) {
         NSMutableDictionary* responseHeaders = [[NSMutableDictionary alloc] init];
         responseHeaders[@"Cache-Control"] = @"no-cache";
