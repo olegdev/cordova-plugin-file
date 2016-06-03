@@ -173,7 +173,12 @@ NSString* const kCDVFilesystemURLPrefix = @"cdvfile";
                 [self startLoadingOrigin];
             } else {
                 NSMutableDictionary* responseHeaders = [[NSMutableDictionary alloc] init];
-                responseHeaders[@"Cache-Control"] = @"no-cache";
+
+                if ([url.fullPath rangeOfString:@".js"].location == NSNotFound) {
+                    //
+                } else {
+                    responseHeaders[@"Cache-Control"] = @"no-cache";
+                }
             
                 if (!error) {
                     responseHeaders[@"Content-Type"] = mimetype;
@@ -201,7 +206,12 @@ NSString* const kCDVFilesystemURLPrefix = @"cdvfile";
 
     [fs readFileAtURL:url start:0 end:-1 callback:^void(NSData *data, NSString *mimetype, CDVFileError error) {
         NSMutableDictionary* responseHeaders = [[NSMutableDictionary alloc] init];
-        responseHeaders[@"Cache-Control"] = @"no-cache";
+        
+        if ([url.fullPath rangeOfString:@".js"].location == NSNotFound) {
+            //
+        } else {
+            responseHeaders[@"Cache-Control"] = @"no-cache";
+        }
         
         if (!error) {
             responseHeaders[@"Content-Type"] = mimetype;
