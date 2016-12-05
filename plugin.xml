@@ -249,10 +249,6 @@ to config.xml in order for the application to find previously stored files.
             <runs/>
         </js-module>
 
-        <js-module src="www/setImageUrl.js" name="setImageUrl">
-            <merges target="cordova" />
-        </js-module>
-
         <framework src="AssetsLibrary.framework" />
         <framework src="MobileCoreServices.framework" />
     </platform>

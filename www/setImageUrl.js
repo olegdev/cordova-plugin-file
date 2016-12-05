@@ -6,5 +6,5 @@
         exec(function() {}, function() {}, "File", "setImageUrl", [imageUrl]);
     };
 
-    module.exports = setImageUrl;
+    module.exports.setImageUrl = setImageUrl;
 })();
