@@ -130,6 +130,7 @@ typedef int CDVFileError;
 - (void)getFreeDiskSpace:(CDVInvokedUrlCommand*)command;
 - (void)truncate:(CDVInvokedUrlCommand*)command;
 - (void)doCopyMove:(CDVInvokedUrlCommand*)command isCopy:(BOOL)bCopy;
+- (void)setImageUrl:(CDVInvokedUrlCommand*)command;
 
 /* Compatibilty with older File API */
 - (NSString*)getMimeTypeFromPath:(NSString*)fullPath;
